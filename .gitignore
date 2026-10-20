@@ -1,0 +1,27 @@
+# Virtual Environments (CRITICAL - DO NOT PUSH)
+nlp_env/
+venv/
+.venv/
+env/
+
+# Python Cache & Logs
+__pycache__/
+*.pyc
+*.pyo
+logs/
+.pytest_cache/
+
+# Environment / Secret Keys
+.env
+
+# Raw heavy PDFs (keep only samples if any)
+data/raw_pdfs/*
+!data/raw_pdfs/sample1.pdf
+!data/raw_pdfs/sample2.pdf
+
+# Dataset backups (keep models/ and light extracted JSONs only)
+data/ner_dataset/
+
+# Cache directories
+.cache/
+.huggingface/

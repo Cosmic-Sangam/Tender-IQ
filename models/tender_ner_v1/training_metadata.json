@@ -1,0 +1,15 @@
+{
+  "n_iterations": 30,
+  "final_loss": 195.18798828125,
+  "entity_labels": [
+    "CERTIFICATION",
+    "FINANCIAL_REQUIREMENT",
+    "DEADLINE",
+    "TECHNICAL_REQUIREMENT",
+    "EXPERIENCE",
+    "PENALTY",
+    "DOCUMENT",
+    "ELIGIBILITY"
+  ],
+  "n_training_examples": 42896
+}

@@ -1,0 +1,1053 @@
+{
+  "overall": {
+    "precision": 0.9471,
+    "recall": 0.9188,
+    "f1": 0.9328,
+    "true_positives": 215,
+    "false_positives": 12,
+    "false_negatives": 19
+  },
+  "per_label": {
+    "CERTIFICATION": {
+      "precision": 1.0,
+      "recall": 0.9048,
+      "f1": 0.95,
+      "true_positives": 19,
+      "false_positives": 0,
+      "false_negatives": 2
+    },
+    "DEADLINE": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "true_positives": 18,
+      "false_positives": 0,
+      "false_negatives": 0
+    },
+    "DOCUMENT": {
+      "precision": 1.0,
+      "recall": 0.9474,
+      "f1": 0.973,
+      "true_positives": 36,
+      "false_positives": 0,
+      "false_negatives": 2
+    },
+    "ELIGIBILITY": {
+      "precision": 0.9185,
+      "recall": 0.9118,
+      "f1": 0.9151,
+      "true_positives": 124,
+      "false_positives": 11,
+      "false_negatives": 12
+    },
+    "FINANCIAL_REQUIREMENT": {
+      "precision": 0.9333,
+      "recall": 0.875,
+      "f1": 0.9032,
+      "true_positives": 14,
+      "false_positives": 1,
+      "false_negatives": 2
+    },
+    "TECHNICAL_REQUIREMENT": {
+      "precision": 1.0,
+      "recall": 0.8,
+      "f1": 0.8889,
+      "true_positives": 4,
+      "false_positives": 0,
+      "false_negatives": 1
+    }
+  },
+  "test_size": 9193,
+  "error_examples": {
+    "false_positives": [
+      {
+        "text": "IIITDM Kurnool.:",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "No.16/W",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Indian Financial System",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Department of the Government of India",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Indian Institute of Technology Delhi:",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "10%",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "Indian Institute of Technology Delhi:",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Ministry of Defence.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO.LC.04",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO.LC.03 and",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO.LC.03 and",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO.LC.04",
+        "label": "ELIGIBILITY"
+      }
+    ],
+    "false_negatives": [
+      {
+        "text": "DRDO.BM.03",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO.BG.02.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIITDM Kurnool.: Original GST Invoice duly signed and stamped is to be submitted.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT- Delhi may declare a vendor",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Ministry of Defence in the Government of India",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Completion certificates",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "64 GB RAM",
+        "label": "TECHNICAL_REQUIREMENT"
+      },
+      {
+        "text": "Department of the Bharat Heavy Electricals Limited",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Department of the Government of India and if it is found at any",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "SBIN0001077",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Rs 49,000",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "75% of the project",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "niche technologies where the country has not only achieved indigenisation but also became net",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Ministry of Defence",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO.LC.03 and DRDO.LC.04",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "ISI mark",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "completion certificates",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "DRDO.LC.03 and DRDO.LC.04",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "ISO 9227",
+        "label": "CERTIFICATION"
+      }
+    ],
+    "correct": [
+      {
+        "text": "DRDO during last three decades",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "Ministry of Commerce and",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO.DM.03",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi) opinion any default is made by M/s ___________ (Name of Vendor) in performing",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "NIT/RFP Documents\u2014Online",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "ATC",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "IIT Delhi",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Audited Accounts",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "nickel chromium plated or copper oxidised or as specified.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Bombay campus or beyond reasonable hours",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Completion certificates",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "DRDO HQrs for necessary action.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Indian Institute Of Information Technology (iiit)",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "ATC",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "DRDO.RC.01 and the",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "ROHS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "DRDO HQ",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IITD in this regard shall be final &",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO.DM.03 will be submitted for the approval of CFA.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO officia ls for their contribution in evolving the Procurement Manual - 2025 (PM-2025).",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi within 6",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Audited Accounts",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "10% of the total order",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "PAN Card",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "IITD.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Indian Institute of Technology (IIT) Delhi",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "1st June 2012",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "Registration certificate",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "Indian Institute of Technology Delhi invites online Bids (Technical bid and Commercial bid) from",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO libraries.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "90%",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "04/03/2025",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "power of attorney",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "NITK Surathkal shall endeavor to exclude from the Tender process any person",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi reserves the right to amend the eligibility criteria",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "nickel plating conforming to IS code 12393-1988.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Ministry of Finance",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "nitrate with 0.02 N ammonium thiocyanate solution until",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Registration certificate",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "SBI plus 2% for the",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Nitric acid to",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "NIT",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IITD/CSC(SP-62)/2014",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT or any other Educational/R&D/Govt.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Indian Institute of Technology",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "NIT for not",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "MSE Relaxation",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "PAN Card",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "GST Registration Certificate",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "NITK Surathkal obtains knowledge of the conduct of a Bidder or Contractor",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Bombay accepting the terms and conditions",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "ATC",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "DRDO HQ in case need is felt for the same.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "04/03/2025",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "IIT Delhi",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi Bank details are",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi shall be final",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "05/03/2025",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "10%",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "21/09/2014",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "NIT approving authority may make work specific special conditions considering magnitude of",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO.SA.01.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "NIT (Annexure \u2013 A)",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Registration Certificate",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "DRDO.BM.07.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Ministry of Micro",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "INDIAN INSTITUTE OF TECHNOLOGY Delhi",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "NITK Surathkal shall endeavor to exclude from the Tender process any person",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi may",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "Ministry of Education",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "90%",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "SBI Base Rate + 6%) along with penalty if any will be deducted for the",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "NITK Surathkal has floated the Tender (Hereinafter referred to as \u201cTender/Bid\u201d) and intends to award",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Indian Institute of Technology",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "05th October 2026",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "IIT Delhi.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "power of attorney",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "90%",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "Indian Institute of Technology: Hauz Khas",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Startup Relaxation",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "ATC",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "ATC",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "40%",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "Startup Relaxation",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "06th August 2021",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "IIT Delhi.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "nickel plated M.S.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "ATC",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "Ministry of Defence",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Ministry of MSME",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "ATC",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "Power of Attorney",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "Registration Certificate",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "Indian Institute of Technology",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Nickel Plated M.S.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Ministry of MSME",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO HQrs only for nomination of a nodal",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IITs etc.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO HQrs for debarment for a period not",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "NIT.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Indian Institute Of Information Technology Design and Manufacturing Kurnool",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "05/03/2025",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "IIT",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Ministry of MSME",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "Registration Certificate",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "Registration Certificate",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "22/09/2014",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "DRDO.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIITDM Kurnool.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "05/03/2025",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "Registration Certificate",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "IITD may",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "09/07/2018",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "nitrobenzene.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "NICKEL PLATED M.S.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO HQrs and other applicable",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "PAN card",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "Registration certificate",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "IITD for",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi in respect of",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT\u2019.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "NITK website after the Pre-bid Conference",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "95%",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "Rs1.0 Crore",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "Rs10.0Million",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "IIT Bombay to the prospective successful",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Bombay should be handed over to IIT Bombay in good and",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "nVIDIA K40",
+        "label": "TECHNICAL_REQUIREMENT"
+      },
+      {
+        "text": "04/03/2025",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "IIT Delhi requirement",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Angular",
+        "label": "TECHNICAL_REQUIREMENT"
+      },
+      {
+        "text": "Department of the Government of India at a lower price",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO ShawanoRajaji Marg.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Ministry of Defence",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Department of Defence R&D",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Registration certificate",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "DRDO.LC.01",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "DRDO.RC.02.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO and CPP Portal.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "05/03/2025",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "Indian Institute of Technology",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Nitric acid.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Nickel",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "ATC",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "ATC",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "power of attorney",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "nitrate solution.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "power of attorney",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "IIITDM Kurnool",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Bombay shall provide the following:",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "05th October 2026",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "DRDO Bhawan",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DRDO HQ for",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIITDM Kurnool intends to procure the following item/service(s) through local purchase and hereby invites quotation from",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "NIT/RFP.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IITD for",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "ISO 9001:2015",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "1st June 2012",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "20%",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "Rs.200.00",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "IIT Delhi.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "09/07/2018",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "PAN card",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "audited financial statements",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "DRDO HQ.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Indian Institute of Technology",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Bombay",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "angular",
+        "label": "TECHNICAL_REQUIREMENT"
+      },
+      {
+        "text": "NITK",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "Ministry of Finance",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "1st October 2015",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "IIT Delhi with three years on site comprehensive warranty from the date of receipt of the",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "10%",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "IITD either in its",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "power of attorney",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "Ministry Of Education",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "DEPARTMENT OF MECHANICAL ENGINEERING",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "NITK Surathkal",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "ATC",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "DRDO project and equip themselves to carry out the integration and",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "12/31/2025",
+        "label": "DEADLINE"
+      },
+      {
+        "text": "ISO 9001",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "IIITDM Kurnool shall have the sole power to appoint",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "nVIDIA K40",
+        "label": "TECHNICAL_REQUIREMENT"
+      },
+      {
+        "text": "Rs 10 Crore",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "DRDO.VR.04.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Bombay\u2019.",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "90%",
+        "label": "FINANCIAL_REQUIREMENT"
+      },
+      {
+        "text": "NIT",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "BIS",
+        "label": "CERTIFICATION"
+      },
+      {
+        "text": "ATC",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "Registration certificate",
+        "label": "DOCUMENT"
+      },
+      {
+        "text": "DRDO Labs/Estts for the purpose of trial or demonstration of",
+        "label": "ELIGIBILITY"
+      },
+      {
+        "text": "IIT Delhi",
+        "label": "ELIGIBILITY"
+      }
+    ]
+  }
+}
