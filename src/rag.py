@@ -1,8 +1,7 @@
 """
 TenderIQ — Fully Dynamic RAG Pipeline
 ======================================
-100% Dynamic Model Discovery: Probes the API directly and connects
-to whichever generative model is active on your key.
+100% Dynamic Model Discovery with Streamlit Cloud Secrets & .env support.
 """
 
 import sys
@@ -46,6 +45,22 @@ Based ONLY on the above context, answer this question accurately:
 {question}"""
 
 
+def _get_api_key(key_name: str) -> str:
+    """Helper to fetch API key from Streamlit Cloud Secrets OR local environment variables."""
+    # 1. Try Streamlit Secrets (Cloud Deployment)
+    try:
+        import streamlit as st
+        if hasattr(st, "secrets") and key_name in st.secrets:
+            val = st.secrets[key_name]
+            if val:
+                return str(val).strip()
+    except Exception:
+        pass
+
+    # 2. Try OS Environment / .env file (Local execution)
+    return os.getenv(key_name, "").strip()
+
+
 class TenderRAG:
     """Universal RAG pipeline with 100% dynamic model discovery."""
 
@@ -57,8 +72,9 @@ class TenderRAG:
         logger.info("Initializing RAG Pipeline...")
         self.search_engine = SemanticSearchEngine(embeddings_dir, model_name)
         
-        self.gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
-        self.groq_key = os.getenv("GROQ_API_KEY", "").strip()
+        # Dual key resolution (Cloud Secrets + Local .env)
+        self.gemini_key = _get_api_key("GEMINI_API_KEY")
+        self.groq_key = _get_api_key("GROQ_API_KEY")
         
         self.provider = None
         self.gemini_model = None
@@ -106,7 +122,6 @@ class TenderRAG:
             for model_id in prioritized[:3]:
                 try:
                     logger.info(f"  Probing: {model_id}...")
-                    # Pass system_instruction directly during model creation
                     candidate = genai.GenerativeModel(
                         model_id, 
                         system_instruction=SYSTEM_PROMPT
@@ -200,7 +215,7 @@ class TenderRAG:
                 logger.error(f"Groq generation error: {e}")
                 return f"[Groq Error: {e}]"
 
-        return "[LLM not configured. Please check your API keys in .env]"
+        return "[LLM not configured. Please check your API keys in Streamlit Secrets or .env]"
 
     def ask(self, question, top_k=8, min_score=0.05, filter_document_id=None):
         if not question or not question.strip():
