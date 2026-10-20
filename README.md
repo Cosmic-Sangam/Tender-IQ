@@ -1,43 +1,24 @@
-# TenderIQ 📋
+# 🚀 TenderIQ — AI-Powered Tender Intelligence & QA System
 
-### Tender/RFP Intelligence and Requirement Extraction System
+> An end-to-end NLP Capstone System featuring custom spaCy NER, Hybrid Rule Extraction, Page-Aware Semantic Search, and RAG Grounded Summarization.
 
-An NLP capstone project that extracts requirements from government
-tender documents using custom NER, rules, semantic search, and RAG.
-
----
-
-## 🚧 Current Progress: Day 1 Complete
-
-- ✅ Project setup
-- ✅ PDF extraction with page numbers
-- ✅ Text cleaning
-- ✅ Chunking
-- ⏳ Day 2: NER Training
-- ⏳ Day 3: Rule Extraction
-- ⏳ Day 4: Embeddings + Search
-- ⏳ Day 5: RAG
-- ⏳ Day 6: Streamlit App
-- ⏳ Day 7: Deployment
+📍 **Live Demo:** [Click Here to Launch TenderIQ App](https://tender-iq-mzwt9hmwzi2dxudf5auhh8.streamlit.app/)
 
 ---
 
-## Quick Start
+## 🛠️ Architecture Overview
+1. **PDF Parsing & Cleaning:** PyMuPDF layout and table extraction.
+2. **Custom NER:** Fine-tuned spaCy model (`models/tender_ner_v1`) trained on domain-specific procurement entities (`FINANCIAL_REQUIREMENT`, `TECHNICAL_REQUIREMENT`, `DEADLINE`, etc.).
+3. **Hybrid Engine:** Regex-rule fallback + NER for high recall on GeM & CPPP tenders.
+4. **Vector Search:** `sentence-transformers/all-MiniLM-L6-v2` with incremental embeddings & document-level scope filtering.
+5. **Grounded RAG:** Dynamic Gemini AI retrieval with direct page-level evidence citation.
 
+---
+
+## 💻 Local Setup
 ```bash
-# Clone
-git clone https://github.com/YOUR_USERNAME/TenderIQ.git
-cd TenderIQ
-
-# Environment
-python -m venv venv
-source venv/bin/activate    # or venv\Scripts\activate on Windows
-
-# Install
+git clone https://github.com/YOUR_USERNAME/tender-iq.git
+cd tender-iq
 pip install -r requirements.txt
-
-# Run Day 1
-python run_day1.py
-
-# Run tests
-python tests/test_day1.py
+python -m spacy download en_core_web_sm
+streamlit run streamlit_app.py
