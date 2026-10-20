@@ -1,9 +1,3 @@
-"""
-TenderIQ — Master Streamlit Application (Presentation Ready)
-=============================================================
-Lazy loading + lightning-fast lookups + professional UI.
-"""
-
 import os
 import sys
 import json
@@ -109,14 +103,23 @@ st.markdown("""
 # ═══════════════════════════════════════════════════════
 # LAZY CACHED LOADERS (only load when needed)
 # ═══════════════════════════════════════════════════════
-@st.cache_resource(show_spinner="⏳ Loading NER model (one-time)...")
-def load_pipeline():
+# 1. Cache the Heavy RAG Engine & Embedding Model (Loads ONCE when app boots)
+@st.cache_resource(show_spinner="⚡ Booting AI Search & RAG Engine...")
+def get_cached_rag():
+    from src.rag import TenderRAG
+    return TenderRAG()
+
+
+# 2. Cache the Hybrid NER Pipeline (Loads ONCE when app boots)
+@st.cache_resource(show_spinner="⚡ Loading Custom NER Model...")
+def get_cached_hybrid():
+    from src.hybrid_pipeline import HybridPipeline
     return HybridPipeline("models/tender_ner_v1")
 
 
-@st.cache_resource(show_spinner="⏳ Connecting to RAG engine (one-time)...")
-def load_rag():
-    return TenderRAG()
+# Initialize cached instances
+rag = get_cached_rag()
+hybrid = get_cached_hybrid()
 
 
 # ═══════════════════════════════════════════════════════
@@ -255,20 +258,33 @@ def main():
     st.sidebar.markdown("## 📁 Documents")
 
     uploaded_file = st.sidebar.file_uploader("Upload Tender PDF", type=["pdf"])
+    
+    # Handle PDF Upload / Extraction safely inside session state
     if uploaded_file is not None:
-        save_path = Path("data/raw_pdfs") / uploaded_file.name
-        uploaded_doc_id = save_path.stem.lower().replace(" ", "_")
-        cleaned_target = Path("data/extracted") / f"{uploaded_doc_id}_cleaned.json"
+        doc_id = os.path.splitext(uploaded_file.name)[0]
         
-        if not cleaned_target.exists():
-            with open(save_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-            processed_id = run_single_pipeline(save_path)
-            st.session_state["selected_doc"] = processed_id
-            st.rerun()
+        # Check if this doc is ALREADY processed in memory
+        if st.session_state.get("current_doc_id") != doc_id:
+            with st.spinner("📄 Processing PDF text & extracting entities..."):
+                # Save uploaded PDF
+                pdf_path = os.path.join("data/raw_pdfs", uploaded_file.name)
+                os.makedirs("data/raw_pdfs", exist_ok=True)
+                with open(pdf_path, "wb") as f:
+                    f.write(uploaded_file.getbuffer())
+                
+                # Process extraction ONLY ONCE per document
+                processed_id = run_single_pipeline(Path(pdf_path))
+                
+                # Store result in session_state so reruns don't repeat this step
+                st.session_state["current_doc_id"] = processed_id
+                st.session_state["selected_doc"] = processed_id
+                st.session_state["last_uploaded"] = uploaded_file.name
+                
+                st.success(f"Successfully processed {uploaded_file.name}!")
+                st.rerun()
         else:
             if st.session_state.get("last_uploaded") != uploaded_file.name:
-                st.session_state["selected_doc"] = uploaded_doc_id
+                st.session_state["selected_doc"] = doc_id.lower().replace(" ", "_")
                 st.session_state["last_uploaded"] = uploaded_file.name
 
     extracted_dir = Path("data/extracted")
@@ -300,6 +316,8 @@ def main():
             delete_specific_document(selected_doc_key)
             if "selected_doc" in st.session_state:
                 del st.session_state["selected_doc"]
+            if "current_doc_id" in st.session_state:
+                del st.session_state["current_doc_id"]
         st.rerun()
 
     st.sidebar.subheader("🧹 Maintenance")
@@ -318,10 +336,9 @@ def main():
     ])
 
     # Lazy load: pipeline only when Tab 1 or 2 is active
-    pipeline = None
+    pipeline = hybrid
     doc_results = None
     try:
-        pipeline = load_pipeline()
         doc_results = pipeline.process_document(str(selected_doc_path))
     except Exception as e:
         st.error(f"Pipeline Error: {e}")
@@ -444,13 +461,6 @@ def main():
         )
 
         if query:
-            # Load RAG ONLY when user asks something
-            try:
-                rag = load_rag()
-            except Exception as e:
-                st.error(f"RAG Error: {e}")
-                st.stop()
-
             filter_id = selected_doc_key if scope == "Active document only" else None
             
             with st.spinner("🔍 Searching & generating..."):

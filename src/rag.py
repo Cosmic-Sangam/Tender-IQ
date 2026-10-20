@@ -1,7 +1,7 @@
 """
-TenderIQ — Fully Dynamic RAG Pipeline
-======================================
-100% Dynamic Model Discovery with Safe Token Probing.
+TenderIQ — Zero-Probe RAG Engine with Rate-Limit Handling & Groq Fallback
+========================================================================
+Prevents 429 Quota Exceeded by eliminating dummy probe calls on startup.
 """
 
 import sys
@@ -66,7 +66,7 @@ def _get_api_key(key_name: str) -> str:
 
 
 class TenderRAG:
-    """Universal RAG pipeline with safe dynamic model discovery."""
+    """Universal RAG pipeline with Zero-Probe Instant Boot."""
 
     def __init__(
         self,
@@ -90,23 +90,24 @@ class TenderRAG:
         self.groq_client = None
         self.last_error = None
 
-        # ── 1. SAFE GEMINI DISCOVERY ──
-        if self.gemini_key:
-            self._init_dynamic_gemini()
-        else:
-            self.last_error = "GEMINI_API_KEY is missing or empty in Secrets."
+        # Always initialize Groq client if key is present for instant fallback
+        if self.groq_key:
+            self._init_groq()
 
-        # ── 2. GROQ FALLBACK ──
-        if not self.provider and self.groq_key:
-            self._init_dynamic_groq()
+        # Direct Gemini selection without dummy probe calls
+        if self.gemini_key:
+            self._init_zero_probe_gemini()
+
+        if not self.provider and self.groq_client:
+            self.provider = "groq"
 
         if not self.provider:
             logger.warning(f"No active LLM provider found. Error: {self.last_error}")
 
         self.llm_client = self.provider
 
-    def _init_dynamic_gemini(self):
-        """Fast & safe model discovery."""
+    def _init_zero_probe_gemini(self):
+        """Pick best model without making dummy API probe calls (saves quota!)."""
         try:
             import google.generativeai as genai
             genai.configure(api_key=self.gemini_key)
@@ -119,83 +120,51 @@ class TenderRAG:
                         continue
                     discovered.append(name)
             
-            logger.info(f"Found {len(discovered)} text models")
-
             if not discovered:
                 self.last_error = "No generateContent models available on key."
                 return
 
+            # Prioritize stable flash models over preview ones
             prioritized = sorted(
                 discovered,
-                key=lambda n: (0 if "flash" in n.lower() else 1 if "pro" in n.lower() else 2)
+                key=lambda n: (
+                    0 if "flash-lite" in n.lower() else
+                    1 if "1.5-flash" in n.lower() else
+                    2 if "2.5-flash" in n.lower() else
+                    3 if "flash" in n.lower() else 4
+                )
             )
 
-            for model_id in prioritized[:5]:
-                try:
-                    logger.info(f"Testing Gemini model: {model_id}...")
-                    test_model = genai.GenerativeModel(model_id)
-                    probe = test_model.generate_content(
-                        "Hi",
-                        generation_config={"max_output_tokens": 15, "temperature": 0.0}
-                    )
-                    
-                    # Safe check for response text
-                    has_parts = False
-                    if probe and hasattr(probe, "candidates") and probe.candidates:
-                        cand = probe.candidates[0]
-                        if hasattr(cand, "content") and cand.content and cand.content.parts:
-                            has_parts = True
-
-                    if has_parts or (probe and hasattr(probe, "text")):
-                        self.gemini_model = genai.GenerativeModel(
-                            model_id, 
-                            system_instruction=SYSTEM_PROMPT
-                        )
-                        self.active_model_name = model_id.replace("models/", "")
-                        self.provider = "gemini"
-                        self.last_error = None
-                        logger.info(f"✓ Connected to Gemini: {self.active_model_name}")
-                        return
-                except Exception as e:
-                    logger.debug(f"Skipped {model_id}: {e}")
-                    self.last_error = f"Probe failed for {model_id}: {e}"
-                    continue
+            # Instant assignment without calling generate_content()
+            selected_model_id = prioritized[0]
+            self.gemini_model = genai.GenerativeModel(
+                selected_model_id,
+                system_instruction=SYSTEM_PROMPT
+            )
+            self.active_model_name = selected_model_id.replace("models/", "")
+            self.provider = "gemini"
+            self.last_error = None
+            logger.info(f"✓ Instantly assigned Gemini model: {self.active_model_name} (0 quota used on boot)")
 
         except Exception as e:
             self.last_error = f"Gemini init error: {e}"
             logger.warning(f"Gemini error: {e}")
 
-    def _init_dynamic_groq(self):
-        """Dynamically probes Groq models."""
+    def _init_groq(self):
+        """Initialize Groq client."""
         try:
             from groq import Groq
             self.groq_client = Groq(api_key=self.groq_key)
             all_groq = [m.id for m in self.groq_client.models.list().data]
-            
             chat_candidates = [
                 m for m in all_groq 
                 if not any(x in m.lower() for x in ["guard", "whisper", "vision", "orpheus"])
             ]
-
-            for model_id in chat_candidates:
-                try:
-                    logger.info(f"Testing Groq model probe: {model_id}...")
-                    self.groq_client.chat.completions.create(
-                        model=model_id,
-                        messages=[{"role": "user", "content": "Hi"}],
-                        max_tokens=5
-                    )
-                    self.active_model_name = model_id
-                    self.provider = "groq"
-                    self.last_error = None
-                    logger.info(f"✓ Connected to live Groq model: {self.active_model_name}")
-                    return
-                except Exception as e:
-                    self.last_error = f"Groq probe failed for {model_id}: {e}"
-                    continue
+            if chat_candidates:
+                self.groq_model_name = chat_candidates[0]
+                logger.info(f"✓ Groq fallback ready: {self.groq_model_name}")
         except Exception as e:
-            self.last_error = f"Groq configuration error: {e}"
-            logger.warning(f"Groq discovery error: {e}")
+            logger.warning(f"Groq setup notice: {e}")
 
     def _build_context(self, results):
         if not results:
@@ -210,34 +179,48 @@ class TenderRAG:
         return "\n\n---\n\n".join(context_parts)
 
     def _call_llm(self, prompt):
+        # 1. Try Gemini
         if self.provider == "gemini":
             try:
                 response = self.gemini_model.generate_content(
                     prompt,
-                    generation_config={"temperature": 0.1, "max_output_tokens": 600}
+                    generation_config={"temperature": 0.1, "max_output_tokens": 500}
                 )
                 return response.text.strip()
             except Exception as e:
-                logger.error(f"Gemini generation error: {e}")
-                return f"[Gemini Error: {e}]"
+                err_str = str(e)
+                logger.error(f"Gemini error: {err_str}")
+                
+                # If Gemini hits 429 Rate Limit, attempt Groq fallback automatically
+                if "429" in err_str or "quota" in err_str.lower():
+                    if self.groq_client and hasattr(self, "groq_model_name"):
+                        logger.info("⚡ Gemini 429 quota reached. Switching seamlessly to Groq fallback!")
+                        return self._call_groq(prompt)
+                    return f"⚠️ Gemini Free Tier Rate Limit (5 requests/min) reached. Please wait ~30 seconds and try again, or add a `GROQ_API_KEY` in Secrets for auto-fallback!"
+                
+                return f"[Gemini Generation Error: {e}]"
 
-        elif self.provider == "groq":
-            try:
-                response = self.groq_client.chat.completions.create(
-                    model=self.active_model_name,
-                    messages=[
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.1,
-                    max_tokens=600,
-                )
-                return response.choices[0].message.content.strip()
-            except Exception as e:
-                logger.error(f"Groq generation error: {e}")
-                return f"[Groq Error: {e}]"
+        # 2. Try Groq
+        elif self.provider == "groq" or self.groq_client:
+            return self._call_groq(prompt)
 
         return f"[LLM not active. Status: {self.last_error}]"
+
+    def _call_groq(self, prompt):
+        try:
+            response = self.groq_client.chat.completions.create(
+                model=getattr(self, "groq_model_name", "llama-3.3-70b-versatile"),
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.1,
+                max_tokens=500,
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            logger.error(f"Groq generation error: {e}")
+            return f"[Groq Error: {e}]"
 
     def ask(self, question, top_k=8, min_score=0.05, filter_document_id=None):
         if not question or not question.strip():
