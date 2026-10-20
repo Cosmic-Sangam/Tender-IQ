@@ -47,18 +47,25 @@ Based ONLY on the above context, answer this question accurately:
 
 def _get_api_key(key_name: str) -> str:
     """Helper to fetch API key from Streamlit Cloud Secrets OR local environment variables."""
-    # 1. Try Streamlit Secrets (Cloud Deployment)
+    # 1. OS environment variable
+    val = os.getenv(key_name, "").strip()
+    if val:
+        return val
+
+    # 2. Streamlit Cloud Secrets (Case-insensitive)
     try:
         import streamlit as st
-        if hasattr(st, "secrets") and key_name in st.secrets:
-            val = st.secrets[key_name]
-            if val:
-                return str(val).strip()
+        if hasattr(st, "secrets"):
+            if key_name in st.secrets and st.secrets[key_name]:
+                return str(st.secrets[key_name]).strip()
+            # Case insensitive match check
+            for k in st.secrets:
+                if k.upper() == key_name.upper() and st.secrets[k]:
+                    return str(st.secrets[k]).strip()
     except Exception:
         pass
 
-    # 2. Try OS Environment / .env file (Local execution)
-    return os.getenv(key_name, "").strip()
+    return ""
 
 
 class TenderRAG:
@@ -72,25 +79,34 @@ class TenderRAG:
         logger.info("Initializing RAG Pipeline...")
         self.search_engine = SemanticSearchEngine(embeddings_dir, model_name)
         
-        # Dual key resolution (Cloud Secrets + Local .env)
+        # Dual key resolution
         self.gemini_key = _get_api_key("GEMINI_API_KEY")
         self.groq_key = _get_api_key("GROQ_API_KEY")
+
+        # Inject into os.environ for third-party libraries
+        if self.gemini_key:
+            os.environ["GEMINI_API_KEY"] = self.gemini_key
+        if self.groq_key:
+            os.environ["GROQ_API_KEY"] = self.groq_key
         
         self.provider = None
         self.gemini_model = None
         self.active_model_name = None
         self.groq_client = None
+        self.last_error = None
 
-        # ── 1. 100% DYNAMIC GEMINI DISCOVERY & PROBING ──
+        # ── 1. DYNAMIC GEMINI DISCOVERY ──
         if self.gemini_key:
             self._init_dynamic_gemini()
+        else:
+            self.last_error = "GEMINI_API_KEY is missing or empty in Secrets."
 
-        # ── 2. DYNAMIC GROQ FALLBACK IF GEMINI IS NOT ACTIVE ──
+        # ── 2. DYNAMIC GROQ FALLBACK ──
         if not self.provider and self.groq_key:
             self._init_dynamic_groq()
 
         if not self.provider:
-            logger.warning("  No active LLM provider found. Running in retrieval-only mode.")
+            logger.warning(f"No active LLM provider found. Error: {self.last_error}")
 
         self.llm_client = self.provider
 
@@ -100,28 +116,28 @@ class TenderRAG:
             import google.generativeai as genai
             genai.configure(api_key=self.gemini_key)
             
-            # Get all models that support text generation
             discovered = []
             for m in genai.list_models():
                 if "generateContent" in m.supported_generation_methods:
                     name = m.name
-                    # Skip TTS, image, robotics, research models
                     if any(x in name.lower() for x in ["tts", "image", "robot", "research", "lyria", "antigravity", "computer-use", "transcribe"]):
                         continue
                     discovered.append(name)
             
-            logger.info(f"  Found {len(discovered)} text models")
+            logger.info(f"Found {len(discovered)} text models")
 
-            # Sort: flash first, then pro
+            if not discovered:
+                self.last_error = "Gemini key is valid, but no generateContent models were returned by list_models()."
+                return
+
             prioritized = sorted(
                 discovered,
                 key=lambda n: (0 if "flash" in n.lower() else 1 if "pro" in n.lower() else 2)
             )
 
-            # Probe ONLY the first 3 candidates (not all)
-            for model_id in prioritized[:3]:
+            for model_id in prioritized[:5]:
                 try:
-                    logger.info(f"  Probing: {model_id}...")
+                    logger.info(f"Probing: {model_id}...")
                     candidate = genai.GenerativeModel(
                         model_id, 
                         system_instruction=SYSTEM_PROMPT
@@ -134,14 +150,17 @@ class TenderRAG:
                         self.gemini_model = candidate
                         self.active_model_name = model_id.replace("models/", "")
                         self.provider = "gemini"
-                        logger.info(f"  ✓ Active: {self.active_model_name}")
+                        self.last_error = None
+                        logger.info(f"✓ Active Gemini: {self.active_model_name}")
                         return
                 except Exception as e:
-                    logger.debug(f"  Skipped {model_id}: {e}")
+                    self.last_error = f"Probing {model_id} failed: {e}"
+                    logger.debug(f"Skipped {model_id}: {e}")
                     continue
 
         except Exception as e:
-            logger.warning(f"  Gemini error: {e}")
+            self.last_error = f"Gemini configuration error: {e}"
+            logger.warning(f"Gemini error: {e}")
 
     def _init_dynamic_groq(self):
         """Dynamically probes Groq models."""
@@ -150,7 +169,6 @@ class TenderRAG:
             self.groq_client = Groq(api_key=self.groq_key)
             all_groq = [m.id for m in self.groq_client.models.list().data]
             
-            # Filter for text chat models
             chat_candidates = [
                 m for m in all_groq 
                 if not any(x in m.lower() for x in ["guard", "whisper", "vision", "orpheus"])
@@ -158,7 +176,7 @@ class TenderRAG:
 
             for model_id in chat_candidates:
                 try:
-                    logger.info(f"  Testing Groq model probe: {model_id}...")
+                    logger.info(f"Testing Groq model probe: {model_id}...")
                     self.groq_client.chat.completions.create(
                         model=model_id,
                         messages=[{"role": "user", "content": "Hi"}],
@@ -166,12 +184,15 @@ class TenderRAG:
                     )
                     self.active_model_name = model_id
                     self.provider = "groq"
-                    logger.info(f"  ✓ Connected to live Groq model: {self.active_model_name}")
+                    self.last_error = None
+                    logger.info(f"✓ Connected to live Groq model: {self.active_model_name}")
                     return
-                except Exception:
+                except Exception as e:
+                    self.last_error = f"Groq probe failed for {model_id}: {e}"
                     continue
         except Exception as e:
-            logger.warning(f"  Groq discovery error: {e}")
+            self.last_error = f"Groq configuration error: {e}"
+            logger.warning(f"Groq discovery error: {e}")
 
     def _build_context(self, results):
         if not results:
@@ -186,7 +207,6 @@ class TenderRAG:
         return "\n\n---\n\n".join(context_parts)
 
     def _call_llm(self, prompt):
-        # 1. Dynamic Gemini Call
         if self.provider == "gemini":
             try:
                 response = self.gemini_model.generate_content(
@@ -198,7 +218,6 @@ class TenderRAG:
                 logger.error(f"Gemini generation error: {e}")
                 return f"[Gemini Error: {e}]"
 
-        # 2. Dynamic Groq Call
         elif self.provider == "groq":
             try:
                 response = self.groq_client.chat.completions.create(
@@ -215,7 +234,7 @@ class TenderRAG:
                 logger.error(f"Groq generation error: {e}")
                 return f"[Groq Error: {e}]"
 
-        return "[LLM not configured. Please check your API keys in Streamlit Secrets or .env]"
+        return f"[LLM not active. Status: {self.last_error}]"
 
     def ask(self, question, top_k=8, min_score=0.05, filter_document_id=None):
         if not question or not question.strip():
