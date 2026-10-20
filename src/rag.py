@@ -1,7 +1,7 @@
 """
 TenderIQ — Fully Dynamic RAG Pipeline
 ======================================
-100% Dynamic Model Discovery with Streamlit Cloud Secrets & .env support.
+100% Dynamic Model Discovery with Safe Token Probing.
 """
 
 import sys
@@ -47,18 +47,15 @@ Based ONLY on the above context, answer this question accurately:
 
 def _get_api_key(key_name: str) -> str:
     """Helper to fetch API key from Streamlit Cloud Secrets OR local environment variables."""
-    # 1. OS environment variable
     val = os.getenv(key_name, "").strip()
     if val:
         return val
 
-    # 2. Streamlit Cloud Secrets (Case-insensitive)
     try:
         import streamlit as st
         if hasattr(st, "secrets"):
             if key_name in st.secrets and st.secrets[key_name]:
                 return str(st.secrets[key_name]).strip()
-            # Case insensitive match check
             for k in st.secrets:
                 if k.upper() == key_name.upper() and st.secrets[k]:
                     return str(st.secrets[k]).strip()
@@ -69,7 +66,7 @@ def _get_api_key(key_name: str) -> str:
 
 
 class TenderRAG:
-    """Universal RAG pipeline with 100% dynamic model discovery."""
+    """Universal RAG pipeline with safe dynamic model discovery."""
 
     def __init__(
         self,
@@ -79,11 +76,9 @@ class TenderRAG:
         logger.info("Initializing RAG Pipeline...")
         self.search_engine = SemanticSearchEngine(embeddings_dir, model_name)
         
-        # Dual key resolution
         self.gemini_key = _get_api_key("GEMINI_API_KEY")
         self.groq_key = _get_api_key("GROQ_API_KEY")
 
-        # Inject into os.environ for third-party libraries
         if self.gemini_key:
             os.environ["GEMINI_API_KEY"] = self.gemini_key
         if self.groq_key:
@@ -95,13 +90,13 @@ class TenderRAG:
         self.groq_client = None
         self.last_error = None
 
-        # ── 1. DYNAMIC GEMINI DISCOVERY ──
+        # ── 1. SAFE GEMINI DISCOVERY ──
         if self.gemini_key:
             self._init_dynamic_gemini()
         else:
             self.last_error = "GEMINI_API_KEY is missing or empty in Secrets."
 
-        # ── 2. DYNAMIC GROQ FALLBACK ──
+        # ── 2. GROQ FALLBACK ──
         if not self.provider and self.groq_key:
             self._init_dynamic_groq()
 
@@ -111,7 +106,7 @@ class TenderRAG:
         self.llm_client = self.provider
 
     def _init_dynamic_gemini(self):
-        """Fast model discovery — picks first working flash model."""
+        """Fast & safe model discovery."""
         try:
             import google.generativeai as genai
             genai.configure(api_key=self.gemini_key)
@@ -127,7 +122,7 @@ class TenderRAG:
             logger.info(f"Found {len(discovered)} text models")
 
             if not discovered:
-                self.last_error = "Gemini key is valid, but no generateContent models were returned by list_models()."
+                self.last_error = "No generateContent models available on key."
                 return
 
             prioritized = sorted(
@@ -137,29 +132,37 @@ class TenderRAG:
 
             for model_id in prioritized[:5]:
                 try:
-                    logger.info(f"Probing: {model_id}...")
-                    candidate = genai.GenerativeModel(
-                        model_id, 
-                        system_instruction=SYSTEM_PROMPT
+                    logger.info(f"Testing Gemini model: {model_id}...")
+                    test_model = genai.GenerativeModel(model_id)
+                    probe = test_model.generate_content(
+                        "Hi",
+                        generation_config={"max_output_tokens": 15, "temperature": 0.0}
                     )
-                    probe = candidate.generate_content(
-                        "Say OK",
-                        generation_config={"max_output_tokens": 3, "temperature": 0.0}
-                    )
-                    if probe and probe.text:
-                        self.gemini_model = candidate
+                    
+                    # Safe check for response text
+                    has_parts = False
+                    if probe and hasattr(probe, "candidates") and probe.candidates:
+                        cand = probe.candidates[0]
+                        if hasattr(cand, "content") and cand.content and cand.content.parts:
+                            has_parts = True
+
+                    if has_parts or (probe and hasattr(probe, "text")):
+                        self.gemini_model = genai.GenerativeModel(
+                            model_id, 
+                            system_instruction=SYSTEM_PROMPT
+                        )
                         self.active_model_name = model_id.replace("models/", "")
                         self.provider = "gemini"
                         self.last_error = None
-                        logger.info(f"✓ Active Gemini: {self.active_model_name}")
+                        logger.info(f"✓ Connected to Gemini: {self.active_model_name}")
                         return
                 except Exception as e:
-                    self.last_error = f"Probing {model_id} failed: {e}"
                     logger.debug(f"Skipped {model_id}: {e}")
+                    self.last_error = f"Probe failed for {model_id}: {e}"
                     continue
 
         except Exception as e:
-            self.last_error = f"Gemini configuration error: {e}"
+            self.last_error = f"Gemini init error: {e}"
             logger.warning(f"Gemini error: {e}")
 
     def _init_dynamic_groq(self):
