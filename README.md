@@ -16,7 +16,7 @@
   <p><b>Extract • Understand • Answer</b> — <i>grounded intelligence from real tender and RFP documents.</i></p>
 
   <p>
-    🌐 <b>Live Demo:</b> <a href="https://tender-iq.streamlit.app">Launch TenderIQ</a>
+    🌐 <b>Live Demo:</b> <a href="https://tender-iq-mzwt9hmwzi2dxudf5auhh8.streamlit.app/">Launch TenderIQ</a>
     &nbsp; • &nbsp;
     📦 <b>Repository:</b> <a href="https://github.com/Cosmic-Sangam/Tender-IQ">GitHub</a>
   </p>
