@@ -9,7 +9,7 @@
     <a href="https://github.com/Cosmic-Sangam/Tender-IQ"><img src="https://img.shields.io/badge/NLP-Capstone-blue?style=for-the-badge" alt="NLP Capstone" /></a>
     <a href="https://spacy.io/"><img src="https://img.shields.io/badge/spaCy-Custom%20NER-09A3D5?style=for-the-badge&logo=spacy&logoColor=white" alt="spaCy Custom NER" /></a>
     <a href="https://ai.google.dev/"><img src="https://img.shields.io/badge/RAG-Gemini%20%7C%20Groq-orange?style=for-the-badge&logo=google-gemini&logoColor=white" alt="RAG Gemini / Groq" /></a>
-    <a href="https://tender-iq.streamlit.app"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit" height="28" /></a>
+    <a href="https://tender-iq-mzwt9hmwzi2dxudf5auhh8.streamlit.app/"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit" height="28" /></a>
     <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-lightgrey?style=for-the-badge" alt="License: MIT" /></a>
   </p>
 
